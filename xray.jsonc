@@ -1,0 +1,118 @@
+{
+  "log": {
+    "access": "/var/log/xray/access.log",
+    "error": "/var/log/xray/error.log",
+    "loglevel": "warning"
+  },
+  "dns": {
+    "queryStrategy": "UseIP",
+    "servers": [
+      {
+        "address": "https://1.1.1.1/dns-query",
+        "skipFallback": false
+      },
+      {
+        "address": "1.0.0.1",
+        "skipFallback": true
+      }
+    ]
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 10001,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "email": "user@example.com",
+            "id": "uuid",      //执行"xray uuid"生成
+            "level": 0
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "xhttpSettings": {
+          "host": "",
+          "mode": "auto",    //这里建议设置为auto兼容3种模式
+          "path": "/xhttp-path"
+        }
+      }
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 10002,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "flow": "xtls-rprx-vision",
+            "id": "uuid"     //执行"xray uuid"生成，也可使用上面的uuid
+          }
+        ],
+        "decryption": "none"
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true,
+        "routeOnly": true
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "dest": "reality.a.com:443",   //请填入你的伪装域名
+          "privateKey": "PrivateKey",    //执行"xray x25519"生成
+          "serverNames": [
+            "reality.a.com"
+          ],
+          "shortIds": [
+            "yourShortIds"               //执行"openssl rand -hex 8"生成
+          ]
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    }
+  ],
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "block",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:cn"
+        ],
+        "outboundTag": "block",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all"
+        ],
+        "outboundTag": "block",
+        "type": "field"
+      }
+    ]
+  }
+}
