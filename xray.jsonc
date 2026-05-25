@@ -26,11 +26,12 @@
         "clients": [
           {
             "email": "user@example.com",
+            "flow" : "xtls-rprx-vision",
             "id": "uuid",      //执行"xray uuid"生成
             "level": 0
           }
         ],
-        "decryption": "none"
+        "decryption": "mlkem768x25519plus.native.600s.X25519-PrivateKey.ML-KEM-768-Seed."  //执行"xray x25519"生成X25519-PrivateKey 执行"xray mlkem768" 生成ML-KEM-768-Seed 
       },
       "streamSettings": {
         "network": "xhttp",

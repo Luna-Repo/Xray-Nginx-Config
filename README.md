@@ -17,6 +17,12 @@
 生成 UUID：  
 xray uuid  
 
+生成 VLESSENC配置 具体介绍见发布页 [![VLESSENC](https://img.shields.io/badge/VLESSENC-%E5%8F%91%E5%B8%83%E9%A1%B5%E9%9D%A2-green.svg)](https://github.com/XTLS/Xray-core/pull/5067)
+先执行 xray x25519 获取PrivateKey 和 Password (PublicKey)
+再执行 xray mlkem768 获取 Seed 和 Client
+服务端 "decryption": "mlkem768x25519plus.native.600s.PrivateKey.Seed"
+客户端 "encryption": "mlkem768x25519plus.native.0rtt.Password.Client"
+
 生成 Reality 密钥：  
 xray x25519  
 
