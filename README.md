@@ -40,11 +40,12 @@
         "clients": [
           {
             "email": "user@example.com",
+            "flow" : "xtls-rprx-vision",
             "id": "uuid",      //执行"xray uuid"生成
             "level": 0
           }
         ],
-        "decryption": "none"
+        "decryption": "mlkem768x25519plus.native.600s.X25519-PrivateKey.ML-KEM-768-Seed."  //执行"xray x25519"生成X25519-PrivateKey 执行"xray mlkem768" 生成ML-KEM-768-Seed 
       },
       "streamSettings": {
         "network": "xhttp",
@@ -81,13 +82,13 @@
         "network": "tcp",
         "security": "reality",
         "realitySettings": {
-          "dest": "reality.a.com:443",//请填入你的伪装域名
-          "privateKey": "PrivateKey",//执行"xray x25519"生成
+          "dest": "reality.a.com:443",  //请填入你的伪装域名
+          "privateKey": "PrivateKey",  //执行"xray x25519"生成
           "serverNames": [
             "reality.a.com"
           ],
           "shortIds": [
-            "yourShortIds"//执行"openssl rand -hex 8"生成
+            "yourShortIds"  //执行"openssl rand -hex 8"生成
           ]
         }
       }
@@ -139,6 +140,12 @@
 
 生成 UUID：  
 xray uuid  
+
+生成 VLESSENC配置
+先执行 xray x25519 获取PrivateKey 和 Password (PublicKey)
+再执行 xray mlkem768 获取 Seed 和 Client
+服务端 "decryption": "mlkem768x25519plus.native.600s.PrivateKey.Seed"
+客户端 "encryption": "mlkem768x25519plus.native.0rtt.Password.Client"
 
 生成 Reality 密钥：  
 xray x25519  
