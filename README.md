@@ -22,11 +22,11 @@
     "queryStrategy": "UseIP",
     "servers": [
       {
-        "address": "https://dns.google/dns-query",
+        "address": "https://1.1.1.1/dns-query",
         "skipFallback": false
       },
       {
-        "address": "1.1.1.1",
+        "address": "1.0.0.1",
         "skipFallback": true
       }
     ]
