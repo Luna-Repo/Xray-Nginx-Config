@@ -240,17 +240,12 @@ http {
         
         #X25519：当前主流安全且高性能的 ECDH 曲线
         #X25519MLKEM768：后量子PQ混合密钥交换，需要较新 OpenSSL / Nginx 支持
-        ssl_ecdh_curve X25519MLKEM768:X25519;
+        ssl_ecdh_curve X25519MLKEM768:X25519:secp256r1;
 
         #如果你的环境不支持 ML-KEM，可以降级为： 
-        #ssl_conf_command Groups X25519;
-
-        #secp256r1 secp384r1：兼容性较好，但在不同安全模型和实现中存在一定争议
-        #如需兼容旧客户端，可加入这些曲线；否则建议仅保留 X25519
-        #ssl_ecdh_curve X25519MLKEM768:X25519:secp256r1:secp384r1;
+        #ssl_ecdh_curve X25519:secp256r1;
         
-
-        root /home/admin/webpage;  #填入你的网页文件路径
+       root /home/admin/webpage;  #填入你的网页文件路径
         index index.html;
         
         #  3. xray配置部分                                               
