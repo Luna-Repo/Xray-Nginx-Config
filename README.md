@@ -9,8 +9,7 @@
   ## 🧩 Xray 配置
   
   > ⚠️ **重要：复制使用前，请删除所有 `//` 后面的注释，否则配置会报错！**
-  
-
+[![Xray](https://img.shields.io/badge/XRAY-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%93%BE%E6%8E%A5-blue.svg)](https://github.com/Luna-Repo/Xray-Nginx-Config/blob/config/xray.jsonc)
 ```
 {
   "log": {
@@ -157,7 +156,7 @@ openssl rand -hex 8
 ## 🌐 Nginx 配置
 
 > ✅ nginx 支持 `#` 注释，不需要删除注释内容**
-
+[![Nginx](https://img.shields.io/badge/NGINX-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%93%BE%E6%8E%A5-blue.svg)](https://github.com/Luna-Repo/Xray-Nginx-Config/blob/config/Nginx.conf)
 ```
 worker_processes auto;
 pid /run/nginx.pid;
@@ -234,21 +233,59 @@ http {
         #填入你证书私钥路径
         ssl_certificate_key /home/admin/cert/domain.key;
 
+
+        #OCSP装订 如果你的证书不支持OCSP请不要开启 不确定是/否支持建议关闭
+        #ssl_stapling on;
+        #ssl_stapling_verify on;
+        #resolver 8.8.8.8 1.1.1.1 valid=300s;
+        #resolver_timeout 5s;
+
         ssl_protocols TLSv1.3 TLSv1.2;
 
-        #TLS1.2 ciphers
-        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
-        #TLS1.3 ciphers
-        ssl_conf_command Ciphersuites TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384;
+        #不建议在未理解各协议层级作用范围的情况下随意修改 TLS1.2/1.3 cipher suite 或 ecdh_curve 顺序，否则可能导致：
+        # TLS 1.2 安全性下降
+        # ChaCha20 优先策略失效
+        # PQC hybrid key exchange 回退
+        # 兼容性下降或性能异常
+
+        #TLS1.2 cipher
+        #配置1全部AEAD套件，旧设备兼容性较差，但安全性较好
+        #ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+        #配置2允许AES-CBC套件，旧设备兼容性较好，但安全性稍差
+        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
+        
+        #对于无AES-IN的设备进行CHACHA20优化 建议保持开启
+        ssl_conf_command Options PrioritizeChaCha;
+
+        #TLS1.3 cipher 
+        ssl_conf_command Ciphersuites TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384;       
+        
+        #服务器cipher优先 建议开启
         ssl_prefer_server_ciphers on;
+
+        #session 缓存 与 tickets 开启安全性下降，但性能提升，关闭性能下降，但安全性提升. 适用于低流量 / 单机 / 安全优先场景，高并发建议开启 session cache
+        #ssl_session_timeout 30m;
+        #ssl_session_cache shared:SessionCache:10m; #大约 40000 sessions
+        ssl_session_cache off;
         ssl_session_tickets off;
         
-        #X25519：当前主流安全且高性能的 ECDH 曲线
-        #X25519MLKEM768：后量子PQ混合密钥交换，需要较新 OpenSSL / Nginx 支持
-        ssl_ecdh_curve X25519MLKEM768:X25519:prime256r1;
+    
+        #X25519MLKEM768 SecP256r1MLKEM768 后量子PQ混合密钥交换，需要较新 OpenSSL / Nginx 支持
+        ssl_ecdh_curve X25519MLKEM768:X25519:prime256v1:X448:secp384r1:secp521r1:SecP256r1MLKEM768;
 
-        #如果你的环境不支持 ML-KEM，可以降级为： 
-        #ssl_ecdh_curve X25519:prime256r1;
+        #如果你的环境不支持 ML-KEM，可以降级为 
+        #ssl_ecdh_curve X25519:prime256v1:secp384r1:secp521r1;
+
+
+        # HSTS (HTTP Strict Transport Security)
+        # 推荐启用以保障安全性，但请理解其不可逆影响（浏览器缓存期间，当前设置时间为6个月）
+        #
+        # 注意：
+        # 1. 一旦设置 max-age，在有效期内无法通过 HTTP 取消
+        # 2. includeSubDomains 会影响所有子域名
+        # 3. 不建议在未完全确认 HTTPS 覆盖前启用 preload
+        
+        add_header Strict-Transport-Security "max-age=15552000" always;
         
         root /home/admin/webpage;  #填入你的网页文件路径
         index index.html;
