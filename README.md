@@ -13,9 +13,7 @@
 ```
 {
   "log": {
-    "access": "/var/log/xray/access.log",
-    "error": "/var/log/xray/error.log",
-    "loglevel": "warning"
+    "loglevel": "none"
   },
   "dns": {
     "queryStrategy": "UseIP",
