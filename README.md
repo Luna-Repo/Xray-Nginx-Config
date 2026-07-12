@@ -114,9 +114,59 @@ xray x25519
 ### 生成 REALITY shortId
 
 ```bash
+
+### 生成 REALITY 密钥
+
+```bash
+xray x25519
+```
+
+### 生成 REALITY shortId
+
+```bash
 openssl rand -hex 8
 ```
 
+## ⚙️ 部署前需要修改
+
+配置文件中的以下参数需要替换：
+
+| 参数                   | 说明              |
+| -------------------- | --------------- |
+| `your.domain.com`    | 主域名             |
+| `reality.a.com`      | Reality 伪装域名    |
+| `uuid`               | Xray 用户 UUID    |
+| `PrivateKey`         | Reality 私钥      |
+| `shortId`            | Reality shortId |
+
+## 🔐 安全说明
+
+本配置默认采用以下安全策略：
+
+* Xray 服务仅监听 `127.0.0.1`
+* Nginx 作为统一 TLS 入口
+* 非指定 SNI 请求直接丢弃
+* TLS 使用现代加密套件
+* 支持后量子混合密钥交换
+
+注意：
+
+* ML-KEM 后量子混合密钥交换需要较新的 OpenSSL / Nginx 支持。
+* 部分旧设备可能不支持 PQC，可根据环境调整 TLS 参数。
+* 不建议不了解 TLS 工作机制时随意修改 cipher suite 和密钥交换曲线。
+
+**“如有错误或改进建议，欢迎指正，本配置已在个人环境中测试可用。”** ✅
+
+## 📂 项目结构
+
+```
+main branch
+   ├── README.md
+   └── LICENSE
+config branch
+    ├── xray.jsonc
+    └── nginx.conf
+```
 ## ⚙️ 部署前需要修改
 
 配置文件中的以下参数需要替换：
