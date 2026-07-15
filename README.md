@@ -62,7 +62,7 @@
 
 ### Nginx 配置
 
-[Nginx.conf](https://github.com/Luna-Repo/Xray-Nginx-Config/blob/config/Nginx.conf)
+[nginx.conf](https://github.com/Luna-Repo/Xray-Nginx-Config/blob/config/Nginx.conf)
 
 > 注意：
 >
@@ -104,16 +104,6 @@ xray mlkem768
 详细说明：
 
 [![VLESSENC](https://img.shields.io/badge/VLESSENC-%E5%8F%91%E5%B8%83%E9%A1%B5%E9%9D%A2-green.svg)](https://github.com/XTLS/Xray-core/pull/5067)
-
-### 生成 REALITY 密钥
-
-```bash
-xray x25519
-```
-
-### 生成 REALITY shortId
-
-```bash
 
 ### 生成 REALITY 密钥
 
